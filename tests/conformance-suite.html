@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+﻿<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html> <head>
 <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 <title>JQuery Templates Conformance Suite</title>
@@ -70,7 +70,8 @@ function trim(s) {
 }
 
 function trimmedText(node) {
-  return trim(node.innerText || node.textContent);
+//  return trim(node.innerText || node.textContent);
+  return trim(node.textContent || node.innerText );
 }
 
 function extractAndParseTemplates(templateSource) {
