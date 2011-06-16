@@ -68,7 +68,7 @@
 		// If templateString includes at least one HTML tag, $.template( templateString ) is equivalent
 		// to $.template( null, templateString )
 		template: function( name, tmpl ) {
-			if (tmpl) {
+			if ( tmpl !== undefined ) {
 				// Compile template and associate with name
 				if ( typeof tmpl === "string" ) {
 					// This is an HTML string being passed directly in.

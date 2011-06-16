@@ -466,7 +466,7 @@ function compileToFunction( parseTree ) {
 	var javaScriptSource = [
 			"var " + TEMP_NAME_PREFIX + "0;"
 			// Make the options object available
-			+ "$item=$item||{};"
+			+ "$view=$view||{};" 
 			// Make available on the stack, the enumerable properties of the data
 			// object, and the enumerable properties of the options object.
 			// Data properties should trump options.
