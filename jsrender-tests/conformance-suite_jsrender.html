@@ -87,11 +87,22 @@ function runTests() {
       var compiled = {};
       try {
         dataAndItems = new Function("return ([" + dataSource + "])")();
+        var test = templateSource.indexOf("<script") > -1 && $( templateSource ).filter( "script");
+
+        var l = test.length 
+        if ( l ) {
+          $( document.body ).append( test.get() );
+          templateSource = $("#main")[0].innerHTML;
+        }
         var compiled = $.template("main", templateSource);
         result = $.render( compiled, dataAndItems[0], dataAndItems[1]);
       } catch (ex) {
         if (hasConsole && ex.stack) { console.error(ex.stack); }
         result = "Error:" + (ex.message || ex.description);
+      } finally {
+        while ( l-- > 0 ) {
+          document.body.removeChild( test[ l ]);
+        }
       }
       var expectedText;
       var normResult;
@@ -294,9 +305,10 @@ bar</td>
   <tr>
     <td><xmp>Hello, ${world}!</xmp></td>
     <td><xmp>{}</xmp></td>
-    <td>Error:world is not defined</td>
+    <td>Hello, !</td>  
     <td></td>
-    <th>Substitution w/out data</th>
+<!--This differs from Mike Samuel's design. ${undefined} evaluates to substitution of empty string. Not an error...-->    
+<th>Substitution w/out data</th>
   </tr>
   <tr>
     <td><xmp>i=${i}, f=${f}, nf=${nf}, nan=${nan}, inf=${inf}, nzero=${nzero}</xmp></td>
@@ -451,10 +463,10 @@ bar</td>
     <td></td>
     <th>Loop over associative array.</th>
   </tr>
-  <tr>
+    <tr>
     <td><xmp>
       <script type="text/x-jquery-tmpl" id="main">
-        this x=${x}, {{tmpl "that"}}
+        this x=${x}, {{tmpl "#that"}}
       </script>
       <script type="text/x-jquery-tmpl" id="that">
         that x=(${x})
@@ -466,23 +478,23 @@ bar</td>
     <th>Template Calls</th>
   </tr>
   <tr>
-    <td><xmp>{{tmpl({ x, y }) "that"}}</xmp></td>
+    <td><xmp>{{tmpl({ x, y }) "#that"}}</xmp></td>
     <td><xmp>{ x: "x" }</xmp></td>
-    <td>Error:Invalid {{tmpl}} content: ({ x, y }) "that"</td>
+    <td>Error:Invalid {{tmpl}} content: ({ x, y }) "#that"</td>
     <td></td>
     <th>Invalid Template Param</th>
   </tr>
   <tr>
-    <td><xmp>{{tmpl({ x: y }) "that}}</xmp></td>
+    <td><xmp>{{tmpl({ x: y }) "#that}}</xmp></td>
     <td><xmp>{ x: "x" }</xmp></td>
-    <td>Error:Invalid {{tmpl}} content: ({ x: y }) "that</td>
+    <td>Error:Invalid {{tmpl}} content: ({ x: y }) "#that</td>
     <td></td>
     <th>Invalid Template Selector</th>
   </tr>
   <tr>
     <td><xmp>
       <script type="text/x-jquery-tmpl" id="main">
-        this x=${x}, {{tmpl({x: "y"}) "that"}}
+        this x=${x}, {{tmpl({x: "y"}) "#that"}}
       </script>
       <script type="text/x-jquery-tmpl" id="that">
         that x=(${x})
@@ -496,7 +508,7 @@ bar</td>
   <tr>
     <td><xmp>
       <script type="text/x-jquery-tmpl" id="main">
-        this x=${++x}, {{tmpl({ x: ++x }) "that"}}
+        this x=${++x}, {{tmpl({ x: ++x }) "#that"}}
       </script>
       <script type="text/x-jquery-tmpl" id="that">
         that x=(${++x})
@@ -628,7 +640,7 @@ bar</td>
   </tr>
   <tr>
     <td><xmp><script type="text/x-jquery-tmpl" id="main">
-  ${$view.foo},{{tmpl({ "$view": { foo: "data" } }) "t"}},${$view.foo}
+  ${$view.foo},{{tmpl({ "$view": { foo: "data" } }) "#t"}},${$view.foo}
 </script>
 <script type="text/x-jquery-tmpl" id="t">${$view.foo}</script>
 </xmp></td>
@@ -639,7 +651,7 @@ bar</td>
   </tr>
   <tr>
     <td><xmp><script type="text/x-jquery-tmpl" id="main">
-  ${$view.foo},{{tmpl(,{ "foo": "option2" }) "t"}},${$view.foo}
+  ${$view.foo},{{tmpl(,{ "foo": "option2" }) "#t"}},${$view.foo}
 </script>
 <script type="text/x-jquery-tmpl" id="t">${$view.foo}</script>
 </xmp></td>
